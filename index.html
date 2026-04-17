@@ -63,13 +63,6 @@
         .anim-warning-alt { animation: pulse-warning-alt 2s infinite ease-in-out; }
         .anim-danger-alt { animation: pulse-danger-alt 2.2s infinite ease-in-out; }
         .anim-critical-alt { animation: pulse-critical-alt 2.8s infinite ease-in-out; }
-
-        @keyframes pulse-glow-quarter { 
-            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); transform: scale(1); } 
-            50% { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); transform: scale(1.015); } 
-            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); transform: scale(1); } 
-        }
-        .pulse-quarter { animation: pulse-glow-quarter 4s infinite ease-in-out; }
         
         .hide-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
         .hide-scroll::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.6); border-radius: 10px; margin: 0 15px; }
@@ -77,8 +70,21 @@
         .hide-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(16, 185, 129, 0.8); border: 1px solid transparent; }
 
         @media (min-width: 1024px) {
-            #floating-dock { top: 50% !important; transform: translateY(-50%) !important; right: 1.5rem !important; bottom: auto !important; left: auto !important; flex-direction: column !important; max-height: 85vh !important; }
-            #quick-jump-buttons { flex-direction: column !important; max-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important; }
+            #floating-dock {
+                top: 50% !important;
+                transform: translateY(-50%) !important;
+                right: 1.5rem !important;
+                bottom: auto !important;
+                left: auto !important;
+                flex-direction: column !important;
+                max-height: 85vh !important;
+            }
+            #quick-jump-buttons {
+                flex-direction: column !important;
+                max-height: 50vh !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+            }
         }
     </style>
 </head>
@@ -114,15 +120,6 @@
                 <div id="display-project-name-container" class="w-full">
                     <h3 id="display-project-name" class="text-lg md:text-xl lg:text-2xl font-black text-[#1E3A8A] leading-loose tracking-wide drop-shadow-sm w-full pb-2 py-1">กำลังเชื่อมต่อข้อมูล...</h3>
                 </div>
-                
-                <div id="as-of-date-container" class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-orange-300/50 mt-4">
-                    <div class="flex items-center bg-white/70 px-4 py-2.5 rounded-xl border border-orange-200 shadow-sm text-sm sm:text-base font-bold text-slate-700 w-fit transition-all hover:bg-white">
-                        <span class="mr-2 text-lg drop-shadow-sm">📊</span> ข้อมูลผลการดำเนินงาน ณ วันที่: <span id="display-op-date" class="ml-2 text-[#1E3A8A] font-black tracking-wide bg-blue-50 px-2 py-0.5 rounded shadow-inner border border-blue-100">กำลังโหลด...</span>
-                    </div>
-                    <div class="flex items-center bg-white/70 px-4 py-2.5 rounded-xl border border-orange-200 shadow-sm text-sm sm:text-base font-bold text-slate-700 w-fit transition-all hover:bg-white">
-                        <span class="mr-2 text-lg drop-shadow-sm">💰</span> ข้อมูลผลการเบิกจ่าย ณ วันที่: <span id="display-bg-date" class="ml-2 text-[#059669] font-black tracking-wide bg-emerald-50 px-2 py-0.5 rounded shadow-inner border border-emerald-100">กำลังโหลด...</span>
-                    </div>
-                </div>
             </div>
             
             <div class="mt-8 h-1.5 w-full bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] rounded-full shadow-[0_4px_12px_rgba(217,119,6,0.3)] border-t border-[#FEF3C7]"></div>
@@ -140,7 +137,7 @@
                 <div class="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-md rounded-2xl px-6 py-2.5 transform hover:scale-105 transition-transform">
                     <p class="text-xl md:text-2xl lg:text-3xl font-extrabold text-center text-slate-700 tracking-wide pt-1 drop-shadow-sm">แผนงานสะสม <span class="text-red-500 mx-1">vs</span> ผลงานสะสม</p>
                 </div>
-                <div class="inline-flex items-center gap-2.5 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-[0_6px_15px_rgba(239,68,68,0.4)] border border-red-300 text-white pulse-quarter relative z-10">
+                <div class="inline-flex items-center gap-2.5 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-[0_6px_15px_rgba(239,68,68,0.4)] border border-red-300 text-white transform hover:-translate-y-1 transition-transform">
                     <span class="text-2xl drop-shadow-md">📍</span>
                     <span class="text-xl lg:text-2xl font-black drop-shadow-md pt-1 tracking-wide" id="dynamic-quarter-text">ณ ไตรมาสที่ 1</span>
                 </div>
@@ -244,15 +241,12 @@
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
         let currentQuarter = 1;
+        let isLastMonthOfQuarter = false;
 
-        // ไตรมาส 1: ต.ค. - ธ.ค.
-        if (currentMonth >= 10 && currentMonth <= 12) { currentQuarter = 1; } 
-        // ไตรมาส 2: ม.ค. - มี.ค.
-        else if (currentMonth >= 1 && currentMonth <= 3) { currentQuarter = 2; } 
-        // ไตรมาส 3: เม.ย. - มิ.ย.
-        else if (currentMonth >= 4 && currentMonth <= 6) { currentQuarter = 3; } 
-        // ไตรมาส 4: ก.ค. - ก.ย.
-        else if (currentMonth >= 7 && currentMonth <= 9) { currentQuarter = 4; }
+        if (currentMonth >= 10 && currentMonth <= 12) { currentQuarter = 1; isLastMonthOfQuarter = (currentMonth === 12); } 
+        else if (currentMonth >= 1 && currentMonth <= 3) { currentQuarter = 2; isLastMonthOfQuarter = (currentMonth === 3); } 
+        else if (currentMonth >= 4 && currentMonth <= 6) { currentQuarter = 3; isLastMonthOfQuarter = (currentMonth === 6); } 
+        else if (currentMonth >= 7 && currentMonth <= 9) { currentQuarter = 4; isLastMonthOfQuarter = (currentMonth === 9); }
 
         const kpiColorThemes = [
             { planBg: 'bg-emerald-300', planBorder: 'border-emerald-400', planText: 'text-emerald-700', darkText: 'text-emerald-900', actBg: 'bg-emerald-500', actBorder: 'border-emerald-600', actText: 'text-emerald-600', legendPlanBg: 'bg-emerald-300', legendActBg: 'bg-emerald-500', cardPlanBg: 'bg-gradient-to-br from-emerald-200 to-emerald-300', cardPlanText: 'text-emerald-900', cardActBg: 'bg-gradient-to-br from-emerald-500 to-emerald-600', cardActText: 'text-white', cardPctBg: 'bg-emerald-50', cardPctText: 'text-emerald-800' },
@@ -268,6 +262,16 @@
             if (status === "ยังไม่ดำเนินการ" || status === "ไม่มี") return { ring: '#1E293B', badgeBg: 'bg-slate-800', badgeText: 'text-white', pctText: 'text-white', border: 'border-slate-900', subBg: 'bg-white', subText: 'text-slate-800', subBorder: 'border-slate-300', animClass: 'anim-critical-alt', subtext: 'ผลงาน = 0', sepBorder: 'border-white/20' };
             if (status.includes("มีแผนอยู่ใน")) return { ring: '#94A3B8', badgeBg: 'bg-slate-300', badgeText: 'text-slate-800', pctText: 'text-slate-800', border: 'border-slate-400', subBg: 'bg-white', subText: 'text-slate-700', subBorder: 'border-slate-200', animClass: '', subtext: 'ยังไม่ถึงช่วงแผนงาน', sepBorder: 'border-slate-400/50' };
             return { ring: '#CBD5E1', badgeBg: 'bg-slate-200', badgeText: 'text-slate-700', pctText: 'text-slate-700', border: 'border-slate-300', subBg: 'bg-white', subText: 'text-slate-600', subBorder: 'border-slate-200', animClass: '', subtext: '-', sepBorder: 'border-slate-300/50' };
+        };
+
+        const getStatusStyles = (status) => {
+            if (!status) return "bg-slate-100 text-slate-500 border-slate-200";
+            if (status === "เป็นไปตามแผน") return "bg-[#D1FAE5] text-[#065F46] border-[#34D399] shadow-sm anim-success";
+            if (status === "ล่าช้า") return "bg-[#FEF08A] text-[#854D0E] border-[#FACC15] shadow-sm anim-warning"; 
+            if (status === "เสี่ยง") return "bg-[#FEE2E2] text-[#991B1B] border-[#F87171] shadow-md anim-danger font-bold";
+            if (status === "ยังไม่ดำเนินการ" || status === "ไม่มี") return "bg-[#1E293B] text-white border-[#0F172A] shadow-md anim-critical font-bold tracking-wide";
+            if (status.includes("มีแผนอยู่ใน")) return "bg-[#F1F5F9] text-[#475569] border-[#CBD5E1] shadow-sm border font-bold";
+            return "bg-slate-100 text-slate-600 border-slate-200";
         };
 
         const getStatusEmoji = (status) => {
@@ -293,25 +297,37 @@
             return parseFloat(String(foundVal).replace(/,/g, '')) || 0;
         };
 
-        // 🚀 ไม้บรรทัดคำนวณเปอร์เซ็นต์ (Single Source of Truth)
-        function getPctVsCurrentPlan(p1, p2, p3, p4, actual, q) {
-            let pCum = 0;
-            if (q >= 1) pCum += p1;
-            if (q >= 2) pCum += p2;
-            if (q >= 3) pCum += p3;
-            if (q >= 4) pCum += p4;
-
-            if (pCum === 0) return actual > 0 ? 100 : 0; 
-            return (actual / pCum) * 100;
+        function getDynamicStatus(row, quarter) {
+            for (let i = quarter; i >= 1; i--) {
+                const cleanTarget = `สถานะไตรมาส${i}`;
+                for (let k in row) {
+                    if (k.replace(/\s+/g, '') === cleanTarget) {
+                        let s = row[k];
+                        if (s && s.trim() !== "") return s.replace(/[🔴🟡🟢⚫⚪❌]/g, '').trim();
+                    }
+                }
+            }
+            return "ยังไม่ดำเนินการ";
         }
 
-        // 🚀 ไม้บรรทัดตัดสินสถานะ (Single Source of Truth)
-        function determineStatus(p1, p2, p3, p4, actual, q) {
-            let pCum = 0;
-            if (q >= 1) pCum += p1;
-            if (q >= 2) pCum += p2;
-            if (q >= 3) pCum += p3;
-            if (q >= 4) pCum += p4;
+        function getPctVsCurrentPlan(p1, p2, p3, p4, actual, q, isLast) {
+            let pCum = 0; let prevCum = 0;
+            if (q >= 1) { pCum += p1; prevCum = 0; }
+            if (q >= 2) { pCum += p2; prevCum += p1; }
+            if (q >= 3) { pCum += p3; prevCum += (p1 + p2); }
+            if (q >= 4) { pCum += p4; prevCum += (p1 + p2 + p3); }
+
+            if (pCum === 0) return 0;
+            if (!isLast && q > 1) return prevCum > 0 ? (actual / prevCum) * 100 : 0;
+            else return pCum > 0 ? (actual / pCum) * 100 : 0;
+        }
+
+        function determineStatus(p1, p2, p3, p4, actual, q, isLast) {
+            let pCum = 0; let prevCum = 0;
+            if (q >= 1) { pCum += p1; prevCum = 0; }
+            if (q >= 2) { pCum += p2; prevCum += p1; }
+            if (q >= 3) { pCum += p3; prevCum += (p1 + p2); }
+            if (q >= 4) { pCum += p4; prevCum += (p1 + p2 + p3); }
 
             if (pCum === 0) {
                 if (q === 1) return "มีแผนอยู่ในไตรมาสถัดไป";
@@ -319,12 +335,16 @@
                 else if (q === 3) return "มีแผนอยู่ใน Q4";
                 else return "ยังไม่ดำเนินการ";
             }
-            
             if (actual >= pCum) return "เป็นไปตามแผน";
-            if (actual === 0) return "ยังไม่ดำเนินการ";
-            
-            let pct = (actual / pCum) * 100;
-            return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
+            if (!isLast && q > 1) {
+                if (actual >= prevCum) return `เป็นไปตามแผน`;
+                let pct = prevCum > 0 ? (actual / prevCum) * 100 : 0;
+                return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
+            } else {
+                let pct = pCum > 0 ? (actual / pCum) * 100 : 0;
+                if (actual === 0) return "ยังไม่ดำเนินการ";
+                return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
+            }
         }
 
         function fetchCSVData(url) {
@@ -401,14 +421,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const rawIndexData = await fetchCSVWithCache(MASTER_CSV_URL);
-                
                 MASTER_INDEX = rawIndexData.map(row => ({
-                    seq: row["ลำดับ"] || "", 
-                    name: row["ชื่อโครงการ/กิจกรรม"] || "",
-                    url: row["ลิงก์ CSV"] ? row["ลิงก์ CSV"].trim() : "", 
-                    group: row["โครงการหลัก"] || "",
-                    opDate: row["ข้อมูลผลการดำเนินงาน ณ วันที่"] || row["ข้อมูลการดำเนินงาน ณ วันที่"] || row["ผลการดำเนินงาน ณ วันที่"] || "",
-                    bgDate: row["ข้อมูลผลการเบิกจ่ายงบประมาณ ณ วันที่"] || row["ข้อมูลการเบิกจ่าย ณ วันที่"] || row["ข้อมูลผลการเบิกจ่าย ณ วันที่"] || ""
+                    seq: row["ลำดับ"] || "", name: row["ชื่อโครงการ/กิจกรรม"] || "",
+                    url: row["ลิงก์ CSV"] ? row["ลิงก์ CSV"].trim() : "", group: row["โครงการหลัก"] || ""
                 })).filter(row => row.name !== ""); 
 
                 const list = document.getElementById('dropdown-list');
@@ -511,6 +526,7 @@
 
             const displayTitle = document.getElementById('display-project-name');
             const parentTitle = document.getElementById('display-parent-project-name'); 
+            const displayTitleContainer = document.getElementById('display-project-name-container'); 
             const dropdownText = document.getElementById('dropdown-text');
             const dropdownBtn = document.getElementById('dropdown-btn');
             
@@ -518,17 +534,6 @@
             const viewLevel = selectedItem.url === "AUTO_ALL" ? "ALL" : (selectedItem.url === "AUTO_GROUP" ? "GROUP" : "SINGLE");
             
             const isActivity = selectedItem.name.trim().startsWith("-");
-
-            let opDate = selectedItem.opDate;
-            if (!opDate && MASTER_INDEX.length > 0) opDate = MASTER_INDEX[0].opDate; 
-            if (!opDate) opDate = "รออัปเดตจากไฟล์สารบัญ";
-
-            let bgDate = selectedItem.bgDate;
-            if (!bgDate && MASTER_INDEX.length > 0) bgDate = MASTER_INDEX[0].bgDate; 
-            if (!bgDate) bgDate = "รออัปเดตจากไฟล์สารบัญ";
-
-            document.getElementById('display-op-date').textContent = opDate;
-            document.getElementById('display-bg-date').textContent = bgDate;
 
             document.getElementById('budget-cards-container').classList.add('hidden');
             document.getElementById('kpi-cards-container').classList.add('hidden');
@@ -597,10 +602,10 @@
                         for(let k in rawRow) { if (k.replace(/\s+/g, '') === "หน่วยนับ") { unit = rawRow[k] || "ราย"; break; } }
 
                         let groupName = viewLevel === "ALL" ? (fileItem.group || "โครงการอื่นๆ") : (viewLevel === "GROUP" ? fileItem.name.replace(/^- /, '') : name);
-                        let isBudget = name.includes("งบประมาณ");
                         
-                        // 🚀 ลบเงื่อนไขการตัดงบประมาณของไฟล์ย่อยออก (ยอมให้ดึงงบจากไฟล์ที่มีขีด - ได้)
-                        // โค้ดเดิม: if (viewLevel === "ALL" && isSubActivityFile && isBudget) isBudget = false;
+                        let isBudget = name.includes("งบประมาณ");
+                        // 🚀 ลบเงื่อนไขที่กันยอดจากไฟล์กิจกรรมย่อยออกไปแล้ว 100% 
+                        // ทำให้หน้าภาพรวมกรมสามารถดึงยอดงบประมาณมาบวกกันได้สมบูรณ์ตามที่ตกลงกันครับ
                         
                         let rawTarget = getSafeNum(rawRow, "เป้าหมาย");
                         let p1 = getSafeNum(rawRow, "แผนไตรมาส1");
@@ -622,7 +627,7 @@
                             planQ2: p2, actualQ2: getSafeNum(rawRow, "ผลไตรมาส2"),
                             planQ3: p3, actualQ3: getSafeNum(rawRow, "ผลไตรมาส3"),
                             planQ4: p4, actualQ4: getSafeNum(rawRow, "ผลไตรมาส4"),
-                            issue: issueText
+                            issue: issueText, dynamicStat: getDynamicStatus(rawRow, currentQuarter)
                         });
                     });
                 });
@@ -635,8 +640,7 @@
                         target: r.target, actual: r.actual,
                         planQ1: r.planQ1, planQ2: r.planQ2, planQ3: r.planQ3, planQ4: r.planQ4,
                         actualQ1: r.actualQ1, actualQ2: r.actualQ2, actualQ3: r.actualQ3, actualQ4: r.actualQ4,
-                        status: determineStatus(r.planQ1, r.planQ2, r.planQ3, r.planQ4, r.actual, currentQuarter),
-                        issue: r.issue
+                        status: r.dynamicStat, issue: r.issue
                     }));
                 } else {
                     let kpiAgg = {};
@@ -683,7 +687,7 @@
                             target: agg.target, actual: agg.actual,
                             planQ1: agg.p1, planQ2: agg.p2, planQ3: agg.p3, planQ4: agg.p4,
                             actualQ1: agg.a1, actualQ2: agg.a2, actualQ3: agg.a3, actualQ4: agg.a4,
-                            status: determineStatus(agg.p1, agg.p2, agg.p3, agg.p4, agg.actual, currentQuarter),
+                            status: determineStatus(agg.p1, agg.p2, agg.p3, agg.p4, agg.actual, currentQuarter, isLastMonthOfQuarter),
                             issue: viewLevel === "GROUP" ? agg.issues.join("<br>") : ""
                         });
                     });
@@ -694,7 +698,7 @@
                             target: budgetAgg.target, actual: budgetAgg.actual,
                             planQ1: budgetAgg.p1, planQ2: budgetAgg.p2, planQ3: budgetAgg.p3, planQ4: budgetAgg.p4,
                             actualQ1: budgetAgg.a1, actualQ2: budgetAgg.a2, actualQ3: budgetAgg.a3, actualQ4: budgetAgg.a4,
-                            status: determineStatus(budgetAgg.p1, budgetAgg.p2, budgetAgg.p3, budgetAgg.p4, budgetAgg.actual, currentQuarter),
+                            status: determineStatus(budgetAgg.p1, budgetAgg.p2, budgetAgg.p3, budgetAgg.p4, budgetAgg.actual, currentQuarter, isLastMonthOfQuarter),
                             issue: ""
                         });
                     }
@@ -746,7 +750,7 @@
                 let budgetTitleStr = viewLevel === "ALL" ? "งบประมาณทั้งปี (พรบ.)" : (viewLevel === "GROUP" ? "งบประมาณโครงการ (พรบ.)" : (isActivity ? "งบประมาณกิจกรรมหลัก (พรบ.)" : "งบประมาณโครงการ (พรบ.)"));
                 let kpiTargetTitlePrefix = viewLevel === "ALL" ? "เป้าหมายทั้งหมด (พรบ.)" : (viewLevel === "GROUP" ? "เป้าหมายโครงการ (พรบ.)" : (isActivity ? "เป้าหมายกิจกรรมหลัก (พรบ.)" : "เป้าหมายโครงการ (พรบ.)"));
 
-                // ================== 1. การ์ด KPI ==================
+                // ================== 1. การ์ด KPI (🚀 ปรับ layout ไอคอนร้อยละชิดซ้าย เป็น 2 บรรทัดตามที่คุณต้องการ) ==================
                 const kpiContainer = document.getElementById('kpi-cards-container');
                 kpiContainer.innerHTML = '';
                 
@@ -783,11 +787,16 @@
                                     </div>
 
                                     <div class="lg:col-span-1 ${theme.cardPctBg} rounded-[1.5rem] shadow-md p-6 flex flex-col items-center justify-center hover:-translate-y-1.5 transition-all duration-300">
-                                        <div class="flex items-center justify-center mb-3 w-full">
-                                            <div class="p-2 bg-white/60 rounded-xl mr-2 ${theme.cardPctText} shadow-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                                            <p class="text-sm sm:text-base font-extrabold ${theme.cardPctText} leading-tight whitespace-nowrap pt-1">ร้อยละการดำเนินงาน</p>
+                                        <div class="flex flex-row items-center justify-start gap-2.5 w-full mb-2 pl-2">
+                                            <div class="p-1.5 bg-white/60 rounded-xl ${theme.cardPctText} shadow-sm flex-shrink-0 mt-0.5">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </div>
+                                            <div class="flex flex-col text-left">
+                                                <span class="text-lg sm:text-xl lg:text-2xl font-black ${theme.cardPctText} leading-none">ร้อยละ</span>
+                                                <span class="text-sm sm:text-base lg:text-lg font-extrabold ${theme.cardPctText} opacity-80 leading-tight pt-1">การดำเนินงาน</span>
+                                            </div>
                                         </div>
-                                        <h2 class="text-4xl lg:text-5xl font-black ${theme.cardPctText} text-center w-full">${pct.toFixed(2)}</h2>
+                                        <h2 class="text-4xl lg:text-5xl font-black ${theme.cardPctText} text-center w-full mt-2">${pct.toFixed(2)}</h2>
                                     </div>
                                 </div>
                             </div>
@@ -806,7 +815,7 @@
                 }
                 kpiContainer.classList.remove('hidden');
 
-                // ================== 2. การ์ดงบประมาณ ==================
+                // ================== 2. การ์ดงบประมาณ (🚀 ขยายสเกลฟอนต์ให้เท่ากับการ์ด KPI และปรับป้ายร้อยละเป็น 2 บรรทัด) ==================
                 const budgetContainer = document.getElementById('budget-cards-container');
                 budgetContainer.innerHTML = '';
                 if (budgetRows.length > 0) {
@@ -814,26 +823,47 @@
                     const pct = bObj.target > 0 ? (bObj.actual / bObj.target) * 100 : (bObj.actual > 0 ? 100 : 0);
                     budgetContainer.innerHTML = `
                         <div class="bg-gradient-to-br from-[#FDFBF7] via-[#F3E7D3] to-[#E8D0A5] rounded-[1.5rem] border-t-2 border-l-2 border-white/80 border-b border-r border-[#D4AF37]/30 p-5 sm:p-6 shadow-[0_8px_20px_rgba(212,175,55,0.15)] relative overflow-hidden transition-all duration-300">
-                            <h3 class="text-lg md:text-xl font-extrabold mb-4 flex items-center text-[#8B6508] drop-shadow-sm relative z-10 py-1 leading-normal">
+                            <h3 class="text-xl sm:text-2xl lg:text-3xl font-black mb-4 flex items-center text-[#8B6508] drop-shadow-sm relative z-10 py-1 leading-normal">
                                 <svg class="w-7 h-7 mr-3 text-[#D4AF37]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08-.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 ${budgetTitleStr}
                             </h3>
                             <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 w-full relative z-10">
-                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-5 flex flex-col hover:-translate-y-1 shadow-sm transition-all duration-300">
-                                    <div class="flex items-center mb-2"><div class="p-2.5 bg-blue-50 rounded-lg mr-3 text-[#2563EB]"><svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div><p class="text-sm sm:text-base font-extrabold text-slate-600 pt-1">งบประมาณที่ได้รับจัดสรร</p></div>
-                                    <div class="mt-auto text-right w-full pt-2"><h2 class="text-2xl lg:text-3xl xl:text-4xl font-black text-[#1E3A8A] truncate">${formatMoney(bObj.target)} <span class="text-sm font-bold text-slate-400">บาท</span></h2></div>
-                                </div>
-                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-5 flex flex-col hover:-translate-y-1 shadow-sm transition-all duration-300">
-                                    <div class="flex items-center mb-2"><div class="p-2.5 bg-emerald-50 rounded-lg mr-3 text-[#10B981]"><svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div><p class="text-sm sm:text-base font-extrabold text-[#064E3B] pt-1">ผลการเบิกจ่ายสะสม</p></div>
-                                    <div class="mt-auto text-right w-full pt-2"><h2 class="text-2xl lg:text-3xl xl:text-4xl font-black text-[#059669] truncate">${formatMoney(bObj.actual)} <span class="text-sm font-bold text-[#34D399]">บาท</span></h2></div>
-                                </div>
-                                <div class="lg:col-span-1 bg-white rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center hover:-translate-y-1 shadow-sm transition-all duration-300">
-                                    <div class="flex items-center justify-center mb-2 w-full">
-                                        <div class="p-1.5 bg-amber-50 rounded-lg mr-2 text-[#D97706]"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg></div>
-                                        <p class="text-xs sm:text-sm font-extrabold text-slate-500 leading-tight whitespace-nowrap pt-1">ร้อยละการเบิกจ่าย</p>
+                                
+                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                    <div class="flex items-center mb-2">
+                                        <div class="p-3 bg-blue-50 rounded-xl mr-3 text-[#2563EB] shadow-sm"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                                        <p class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-700 py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">งบประมาณที่ได้รับจัดสรร</p>
                                     </div>
-                                    <h2 class="text-3xl lg:text-4xl font-black text-[#D97706] text-center w-full">${pct.toFixed(2)}</h2>
+                                    <div class="mt-auto relative flex items-baseline justify-center w-full pt-4 min-h-[50px]">
+                                        <h2 class="text-3xl lg:text-4xl xl:text-5xl font-black text-[#1E3A8A] truncate px-12 sm:px-16">${formatMoney(bObj.target)}</h2>
+                                        <p class="absolute right-0 bottom-[2px] text-2xl lg:text-3xl font-black text-slate-500 opacity-90 pt-1">บาท</p>
+                                    </div>
                                 </div>
+                                
+                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                    <div class="flex items-center mb-2">
+                                        <div class="p-3 bg-emerald-50 rounded-xl mr-3 text-[#10B981] shadow-sm"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
+                                        <p class="text-xl sm:text-2xl lg:text-3xl font-black text-[#064E3B] py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">ผลการเบิกจ่ายสะสม</p>
+                                    </div>
+                                    <div class="mt-auto relative flex items-baseline justify-center w-full pt-4 min-h-[50px]">
+                                        <h2 class="text-3xl lg:text-4xl xl:text-5xl font-black text-[#059669] truncate px-12 sm:px-16">${formatMoney(bObj.actual)}</h2>
+                                        <p class="absolute right-0 bottom-[2px] text-2xl lg:text-3xl font-black text-[#34D399] opacity-90 pt-1">บาท</p>
+                                    </div>
+                                </div>
+
+                                <div class="lg:col-span-1 bg-white rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                    <div class="flex flex-row items-center justify-start gap-2.5 w-full mb-2 pl-2">
+                                        <div class="p-1.5 bg-amber-50 rounded-xl text-[#D97706] shadow-sm flex-shrink-0 mt-0.5">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                                        </div>
+                                        <div class="flex flex-col text-left">
+                                            <span class="text-lg sm:text-xl lg:text-2xl font-black text-[#D97706] leading-none">ร้อยละ</span>
+                                            <span class="text-sm sm:text-base lg:text-lg font-extrabold text-[#D97706] opacity-80 leading-tight pt-1">การเบิกจ่าย</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="text-4xl lg:text-5xl font-black text-[#D97706] text-center w-full mt-2">${pct.toFixed(2)}</h2>
+                                </div>
+                                
                             </div>
                         </div>
                     `;
@@ -855,17 +885,12 @@
                     if (hasKPI) {
                         unitKeys.forEach((unit, idx) => {
                             const d = kpiByUnit[unit];
-                            const percentCumCurrent = getPctVsCurrentPlan(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter).toFixed(2);
-                            let statusObj = determineStatus(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter);
+                            const percentCumCurrent = getPctVsCurrentPlan(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter, isLastMonthOfQuarter).toFixed(2);
+                            let statusObj = determineStatus(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter, isLastMonthOfQuarter);
                             const theme = kpiColorThemes[idx % kpiColorThemes.length];
                             const statusColor = getDonutStatusColorConfig(statusObj);
                             
                             let displayStatusObj = statusObj.includes("มีแผนอยู่ใน") ? statusObj.replace("มีแผนอยู่ใน ", "มีแผนอยู่ใน<br>") : statusObj;
-
-                            let displayGaugeTitle = unit; 
-                            if (viewLevel !== "ALL") {
-                                displayGaugeTitle = `กิจกรรม KPI (${unit})`;
-                            }
 
                             const pctVal = parseFloat(percentCumCurrent);
                             const arcLength = 251.32; 
@@ -879,7 +904,7 @@
                                     
                                     <div class="relative z-10 px-6 pt-8 pb-0 flex flex-col items-center w-full h-full">
                                         <div class="mb-5 w-full text-center border-b border-black/10 pb-5">
-                                            <h4 class="text-xl sm:text-2xl lg:text-3xl font-black ${theme.darkText} drop-shadow-md truncate w-full pt-1 tracking-wide px-2 bg-white/40 py-1.5 rounded-xl border border-white/50 inline-block shadow-sm">${displayGaugeTitle}</h4>
+                                            <h4 class="text-2xl sm:text-3xl font-black ${theme.darkText} drop-shadow-md truncate w-full pt-1 tracking-wide px-2 bg-white/40 py-1.5 rounded-xl border border-white/50 inline-block shadow-sm">${unit}</h4>
                                         </div>
 
                                         <div class="relative w-[320px] h-[170px] mx-auto mt-4 flex justify-center">
@@ -945,8 +970,8 @@
 
                     if (budgetRows.length > 0) {
                         const bObj = budgetRows[0];
-                        const bPctCurrent = getPctVsCurrentPlan(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter).toFixed(2);
-                        let bStatus = determineStatus(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter);
+                        const bPctCurrent = getPctVsCurrentPlan(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter, isLastMonthOfQuarter).toFixed(2);
+                        let bStatus = determineStatus(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter, isLastMonthOfQuarter);
                         const bStatusColor = getDonutStatusColorConfig(bStatus);
                         
                         let displayBStatus = bStatus.includes("มีแผนอยู่ใน") ? bStatus.replace("มีแผนอยู่ใน ", "มีแผนอยู่ใน<br>") : bStatus;
@@ -1338,7 +1363,7 @@
                 tableActivities.forEach((act, index) => {
                     const safeTarget = act.target > 0 ? act.target : 1;
                     const pctYearly = (act.actual / safeTarget) * 100;
-                    const pctCurrent = getPctVsCurrentPlan(act.planQ1, act.planQ2, act.planQ3, act.planQ4, act.actual, currentQuarter);
+                    const pctCurrent = getPctVsCurrentPlan(act.planQ1, act.planQ2, act.planQ3, act.planQ4, act.actual, currentQuarter, isLastMonthOfQuarter);
                     
                     const q1Pos = Math.min((act.planQ1 / safeTarget) * 100, 100);
                     const q2Pos = Math.min(((act.planQ1 + act.planQ2) / safeTarget) * 100, 100);
@@ -1386,7 +1411,7 @@
                         <div class="w-full relative mt-8 mb-6 group-hover/row:scale-[1.02] transition-transform duration-300">
                             <div class="absolute -top-7 -translate-x-1/2 z-20 bar-chart-col-text flex flex-col items-center" style="left: 0%" data-left="${Math.min(pctYearly, 100)}">
                                 <div class="flex items-center gap-1 mb-0.5">
-                                    <div class="bg-white border border-slate-300 ${statusTextColor} px-1.5 py-0.5 rounded text-[11px] font-black shadow-md pt-1 whitespace-nowrap">${pctCurrent.toFixed(2)}%</div>
+                                    <div class="bg-[#F8FAFC] border border-slate-200 ${statusTextColor} px-1.5 py-0.5 rounded text-[11px] font-black shadow-sm pt-1 whitespace-nowrap">${pctCurrent.toFixed(2)}%</div>
                                     <div class="bg-slate-800 text-white px-1.5 py-0.5 rounded text-[11px] font-bold shadow-md pt-1 whitespace-nowrap">${pctYearly.toFixed(2)}%</div>
                                 </div>
                                 <div class="w-0.5 h-1.5 bg-slate-800"></div>
@@ -1463,7 +1488,7 @@
                 // ================== 7. โซนปัญหาและอุปสรรค ==================
                 if (viewLevel === 'SINGLE' || viewLevel === 'GROUP') {
                     let issuesHtml = '';
-                    if (Object.values(kpiByUnit).some(u => ["ล่าช้า", "เสี่ยง", "ยังไม่ดำเนินการ"].some(st => determineStatus(u.planQ1, u.planQ2, u.planQ3, u.planQ4, u.actual, currentQuarter).includes(st)))) {
+                    if (Object.values(kpiByUnit).some(u => ["ล่าช้า", "เสี่ยง", "ยังไม่ดำเนินการ"].some(st => determineStatus(u.planQ1, u.planQ2, u.planQ3, u.planQ4, u.actual, currentQuarter, isLastMonthOfQuarter).includes(st)))) {
                         issuesHtml += `<div class="bg-gradient-to-r from-red-50 to-white border-l-4 border-red-500 p-5 rounded-r-xl shadow-md mb-8 hover:-translate-y-1 transition-transform anim-danger"><h4 class="font-extrabold text-red-800 mb-2 pt-1 text-lg">แจ้งเตือนสถานะภาพรวม</h4><p class="text-sm sm:text-base text-red-700 leading-relaxed font-bold pt-1">ผลการดำเนินงานสะสมยังต่ำกว่าแผนงานสะสม ขอให้เร่งรัดการดำเนินงานและติดตามอย่างใกล้ชิด</p></div>`;
                     }
                     
