@@ -63,6 +63,14 @@
         .anim-warning-alt { animation: pulse-warning-alt 2s infinite ease-in-out; }
         .anim-danger-alt { animation: pulse-danger-alt 2.2s infinite ease-in-out; }
         .anim-critical-alt { animation: pulse-critical-alt 2.8s infinite ease-in-out; }
+
+        /* 🚀 แอนิเมชันกระพริบไตรมาส ปรับให้นุ่มนวลและช้าลง */
+        @keyframes pulse-glow-quarter { 
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.3); transform: scale(1); } 
+            50% { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); transform: scale(1.01); } 
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); transform: scale(1); } 
+        }
+        .pulse-quarter { animation: pulse-glow-quarter 4s infinite ease-in-out; }
         
         .hide-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
         .hide-scroll::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.6); border-radius: 10px; margin: 0 15px; }
@@ -120,6 +128,15 @@
                 <div id="display-project-name-container" class="w-full">
                     <h3 id="display-project-name" class="text-lg md:text-xl lg:text-2xl font-black text-[#1E3A8A] leading-loose tracking-wide drop-shadow-sm w-full pb-2 py-1">กำลังเชื่อมต่อข้อมูล...</h3>
                 </div>
+                
+                <div id="as-of-date-container" class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-orange-300/50 mt-4">
+                    <div class="flex items-center bg-white/70 px-4 py-2.5 rounded-xl border border-orange-200 shadow-sm text-sm sm:text-base font-bold text-slate-700 w-fit transition-all hover:bg-white">
+                        <span class="mr-2 text-lg drop-shadow-sm">📊</span> ข้อมูลผลการดำเนินงาน ณ วันที่: <span id="display-op-date" class="ml-2 text-[#1E3A8A] font-black tracking-wide bg-blue-50 px-2 py-0.5 rounded shadow-inner border border-blue-100">กำลังโหลด...</span>
+                    </div>
+                    <div class="flex items-center bg-white/70 px-4 py-2.5 rounded-xl border border-orange-200 shadow-sm text-sm sm:text-base font-bold text-slate-700 w-fit transition-all hover:bg-white">
+                        <span class="mr-2 text-lg drop-shadow-sm">💰</span> ข้อมูลผลการเบิกจ่ายงบประมาณ ณ วันที่: <span id="display-bg-date" class="ml-2 text-[#059669] font-black tracking-wide bg-emerald-50 px-2 py-0.5 rounded shadow-inner border border-emerald-100">กำลังโหลด...</span>
+                    </div>
+                </div>
             </div>
             
             <div class="mt-8 h-1.5 w-full bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] rounded-full shadow-[0_4px_12px_rgba(217,119,6,0.3)] border-t border-[#FEF3C7]"></div>
@@ -137,7 +154,7 @@
                 <div class="bg-white/80 backdrop-blur-sm border border-slate-200 shadow-md rounded-2xl px-6 py-2.5 transform hover:scale-105 transition-transform">
                     <p class="text-xl md:text-2xl lg:text-3xl font-extrabold text-center text-slate-700 tracking-wide pt-1 drop-shadow-sm">แผนงานสะสม <span class="text-red-500 mx-1">vs</span> ผลงานสะสม</p>
                 </div>
-                <div class="inline-flex items-center gap-2.5 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-[0_6px_15px_rgba(239,68,68,0.4)] border border-red-300 text-white transform hover:-translate-y-1 transition-transform">
+                <div class="inline-flex items-center gap-2.5 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-[0_6px_15px_rgba(239,68,68,0.4)] border border-red-300 text-white pulse-quarter relative z-10">
                     <span class="text-2xl drop-shadow-md">📍</span>
                     <span class="text-xl lg:text-2xl font-black drop-shadow-md pt-1 tracking-wide" id="dynamic-quarter-text">ณ ไตรมาสที่ 1</span>
                 </div>
@@ -241,12 +258,11 @@
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
         let currentQuarter = 1;
-        let isLastMonthOfQuarter = false;
 
-        if (currentMonth >= 10 && currentMonth <= 12) { currentQuarter = 1; isLastMonthOfQuarter = (currentMonth === 12); } 
-        else if (currentMonth >= 1 && currentMonth <= 3) { currentQuarter = 2; isLastMonthOfQuarter = (currentMonth === 3); } 
-        else if (currentMonth >= 4 && currentMonth <= 6) { currentQuarter = 3; isLastMonthOfQuarter = (currentMonth === 6); } 
-        else if (currentMonth >= 7 && currentMonth <= 9) { currentQuarter = 4; isLastMonthOfQuarter = (currentMonth === 9); }
+        if (currentMonth >= 10 && currentMonth <= 12) { currentQuarter = 1; } 
+        else if (currentMonth >= 1 && currentMonth <= 3) { currentQuarter = 2; } 
+        else if (currentMonth >= 4 && currentMonth <= 6) { currentQuarter = 3; } 
+        else if (currentMonth >= 7 && currentMonth <= 9) { currentQuarter = 4; }
 
         const kpiColorThemes = [
             { planBg: 'bg-emerald-300', planBorder: 'border-emerald-400', planText: 'text-emerald-700', darkText: 'text-emerald-900', actBg: 'bg-emerald-500', actBorder: 'border-emerald-600', actText: 'text-emerald-600', legendPlanBg: 'bg-emerald-300', legendActBg: 'bg-emerald-500', cardPlanBg: 'bg-gradient-to-br from-emerald-200 to-emerald-300', cardPlanText: 'text-emerald-900', cardActBg: 'bg-gradient-to-br from-emerald-500 to-emerald-600', cardActText: 'text-white', cardPctBg: 'bg-emerald-50', cardPctText: 'text-emerald-800' },
@@ -262,16 +278,6 @@
             if (status === "ยังไม่ดำเนินการ" || status === "ไม่มี") return { ring: '#1E293B', badgeBg: 'bg-slate-800', badgeText: 'text-white', pctText: 'text-white', border: 'border-slate-900', subBg: 'bg-white', subText: 'text-slate-800', subBorder: 'border-slate-300', animClass: 'anim-critical-alt', subtext: 'ผลงาน = 0', sepBorder: 'border-white/20' };
             if (status.includes("มีแผนอยู่ใน")) return { ring: '#94A3B8', badgeBg: 'bg-slate-300', badgeText: 'text-slate-800', pctText: 'text-slate-800', border: 'border-slate-400', subBg: 'bg-white', subText: 'text-slate-700', subBorder: 'border-slate-200', animClass: '', subtext: 'ยังไม่ถึงช่วงแผนงาน', sepBorder: 'border-slate-400/50' };
             return { ring: '#CBD5E1', badgeBg: 'bg-slate-200', badgeText: 'text-slate-700', pctText: 'text-slate-700', border: 'border-slate-300', subBg: 'bg-white', subText: 'text-slate-600', subBorder: 'border-slate-200', animClass: '', subtext: '-', sepBorder: 'border-slate-300/50' };
-        };
-
-        const getStatusStyles = (status) => {
-            if (!status) return "bg-slate-100 text-slate-500 border-slate-200";
-            if (status === "เป็นไปตามแผน") return "bg-[#D1FAE5] text-[#065F46] border-[#34D399] shadow-sm anim-success";
-            if (status === "ล่าช้า") return "bg-[#FEF08A] text-[#854D0E] border-[#FACC15] shadow-sm anim-warning"; 
-            if (status === "เสี่ยง") return "bg-[#FEE2E2] text-[#991B1B] border-[#F87171] shadow-md anim-danger font-bold";
-            if (status === "ยังไม่ดำเนินการ" || status === "ไม่มี") return "bg-[#1E293B] text-white border-[#0F172A] shadow-md anim-critical font-bold tracking-wide";
-            if (status.includes("มีแผนอยู่ใน")) return "bg-[#F1F5F9] text-[#475569] border-[#CBD5E1] shadow-sm border font-bold";
-            return "bg-slate-100 text-slate-600 border-slate-200";
         };
 
         const getStatusEmoji = (status) => {
@@ -297,37 +303,25 @@
             return parseFloat(String(foundVal).replace(/,/g, '')) || 0;
         };
 
-        function getDynamicStatus(row, quarter) {
-            for (let i = quarter; i >= 1; i--) {
-                const cleanTarget = `สถานะไตรมาส${i}`;
-                for (let k in row) {
-                    if (k.replace(/\s+/g, '') === cleanTarget) {
-                        let s = row[k];
-                        if (s && s.trim() !== "") return s.replace(/[🔴🟡🟢⚫⚪❌]/g, '').trim();
-                    }
-                }
-            }
-            return "ยังไม่ดำเนินการ";
+        // 🚀 ระบบคำนวณใหม่ เทียบกับไตรมาสปัจจุบันเสมอ (Single Source of Truth)
+        function getPctVsCurrentPlan(p1, p2, p3, p4, actual, q) {
+            let pCum = 0;
+            if (q >= 1) pCum += p1;
+            if (q >= 2) pCum += p2;
+            if (q >= 3) pCum += p3;
+            if (q >= 4) pCum += p4;
+
+            if (pCum === 0) return actual > 0 ? 100 : 0; 
+            return (actual / pCum) * 100;
         }
 
-        function getPctVsCurrentPlan(p1, p2, p3, p4, actual, q, isLast) {
-            let pCum = 0; let prevCum = 0;
-            if (q >= 1) { pCum += p1; prevCum = 0; }
-            if (q >= 2) { pCum += p2; prevCum += p1; }
-            if (q >= 3) { pCum += p3; prevCum += (p1 + p2); }
-            if (q >= 4) { pCum += p4; prevCum += (p1 + p2 + p3); }
-
-            if (pCum === 0) return 0;
-            if (!isLast && q > 1) return prevCum > 0 ? (actual / prevCum) * 100 : 0;
-            else return pCum > 0 ? (actual / pCum) * 100 : 0;
-        }
-
-        function determineStatus(p1, p2, p3, p4, actual, q, isLast) {
-            let pCum = 0; let prevCum = 0;
-            if (q >= 1) { pCum += p1; prevCum = 0; }
-            if (q >= 2) { pCum += p2; prevCum += p1; }
-            if (q >= 3) { pCum += p3; prevCum += (p1 + p2); }
-            if (q >= 4) { pCum += p4; prevCum += (p1 + p2 + p3); }
+        // 🚀 ระบบประเมินสถานะใหม่
+        function determineStatus(p1, p2, p3, p4, actual, q) {
+            let pCum = 0;
+            if (q >= 1) pCum += p1;
+            if (q >= 2) pCum += p2;
+            if (q >= 3) pCum += p3;
+            if (q >= 4) pCum += p4;
 
             if (pCum === 0) {
                 if (q === 1) return "มีแผนอยู่ในไตรมาสถัดไป";
@@ -335,16 +329,12 @@
                 else if (q === 3) return "มีแผนอยู่ใน Q4";
                 else return "ยังไม่ดำเนินการ";
             }
+            
             if (actual >= pCum) return "เป็นไปตามแผน";
-            if (!isLast && q > 1) {
-                if (actual >= prevCum) return `เป็นไปตามแผน`;
-                let pct = prevCum > 0 ? (actual / prevCum) * 100 : 0;
-                return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
-            } else {
-                let pct = pCum > 0 ? (actual / pCum) * 100 : 0;
-                if (actual === 0) return "ยังไม่ดำเนินการ";
-                return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
-            }
+            if (actual === 0) return "ยังไม่ดำเนินการ";
+            
+            let pct = (actual / pCum) * 100;
+            return pct >= 50 ? "ล่าช้า" : "เสี่ยง";
         }
 
         function fetchCSVData(url) {
@@ -421,9 +411,15 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const rawIndexData = await fetchCSVWithCache(MASTER_CSV_URL);
+                
+                // 🚀 ดึงข้อมูลวันที่จากสารบัญ
                 MASTER_INDEX = rawIndexData.map(row => ({
-                    seq: row["ลำดับ"] || "", name: row["ชื่อโครงการ/กิจกรรม"] || "",
-                    url: row["ลิงก์ CSV"] ? row["ลิงก์ CSV"].trim() : "", group: row["โครงการหลัก"] || ""
+                    seq: row["ลำดับ"] || "", 
+                    name: row["ชื่อโครงการ/กิจกรรม"] || "",
+                    url: row["ลิงก์ CSV"] ? row["ลิงก์ CSV"].trim() : "", 
+                    group: row["โครงการหลัก"] || "",
+                    opDate: row["ข้อมูลผลการดำเนินงาน ณ วันที่"] || row["ข้อมูลการดำเนินงาน ณ วันที่"] || row["ผลการดำเนินงาน ณ วันที่"] || "",
+                    bgDate: row["ข้อมูลผลการเบิกจ่ายงบประมาณ ณ วันที่"] || row["ข้อมูลการเบิกจ่าย ณ วันที่"] || row["ข้อมูลผลการเบิกจ่าย ณ วันที่"] || ""
                 })).filter(row => row.name !== ""); 
 
                 const list = document.getElementById('dropdown-list');
@@ -526,7 +522,6 @@
 
             const displayTitle = document.getElementById('display-project-name');
             const parentTitle = document.getElementById('display-parent-project-name'); 
-            const displayTitleContainer = document.getElementById('display-project-name-container'); 
             const dropdownText = document.getElementById('dropdown-text');
             const dropdownBtn = document.getElementById('dropdown-btn');
             
@@ -534,6 +529,18 @@
             const viewLevel = selectedItem.url === "AUTO_ALL" ? "ALL" : (selectedItem.url === "AUTO_GROUP" ? "GROUP" : "SINGLE");
             
             const isActivity = selectedItem.name.trim().startsWith("-");
+
+            // 🚀 โชว์ข้อมูลวันที่
+            let opDate = selectedItem.opDate;
+            if (!opDate && MASTER_INDEX.length > 0) opDate = MASTER_INDEX[0].opDate; 
+            if (!opDate) opDate = "รออัปเดตจากไฟล์สารบัญ";
+
+            let bgDate = selectedItem.bgDate;
+            if (!bgDate && MASTER_INDEX.length > 0) bgDate = MASTER_INDEX[0].bgDate; 
+            if (!bgDate) bgDate = "รออัปเดตจากไฟล์สารบัญ";
+
+            document.getElementById('display-op-date').textContent = opDate;
+            document.getElementById('display-bg-date').textContent = bgDate;
 
             document.getElementById('budget-cards-container').classList.add('hidden');
             document.getElementById('kpi-cards-container').classList.add('hidden');
@@ -603,9 +610,8 @@
 
                         let groupName = viewLevel === "ALL" ? (fileItem.group || "โครงการอื่นๆ") : (viewLevel === "GROUP" ? fileItem.name.replace(/^- /, '') : name);
                         
+                        // 🚀 ลบคำสั่งกันยอดซ้ำทิ้งไปแล้ว ให้ดึงทุกไฟล์ที่มีคำว่างบประมาณ
                         let isBudget = name.includes("งบประมาณ");
-                        // 🚀 ลบเงื่อนไขที่กันยอดจากไฟล์กิจกรรมย่อยออกไปแล้ว 100% 
-                        // ทำให้หน้าภาพรวมกรมสามารถดึงยอดงบประมาณมาบวกกันได้สมบูรณ์ตามที่ตกลงกันครับ
                         
                         let rawTarget = getSafeNum(rawRow, "เป้าหมาย");
                         let p1 = getSafeNum(rawRow, "แผนไตรมาส1");
@@ -627,7 +633,7 @@
                             planQ2: p2, actualQ2: getSafeNum(rawRow, "ผลไตรมาส2"),
                             planQ3: p3, actualQ3: getSafeNum(rawRow, "ผลไตรมาส3"),
                             planQ4: p4, actualQ4: getSafeNum(rawRow, "ผลไตรมาส4"),
-                            issue: issueText, dynamicStat: getDynamicStatus(rawRow, currentQuarter)
+                            issue: issueText
                         });
                     });
                 });
@@ -640,7 +646,9 @@
                         target: r.target, actual: r.actual,
                         planQ1: r.planQ1, planQ2: r.planQ2, planQ3: r.planQ3, planQ4: r.planQ4,
                         actualQ1: r.actualQ1, actualQ2: r.actualQ2, actualQ3: r.actualQ3, actualQ4: r.actualQ4,
-                        status: r.dynamicStat, issue: r.issue
+                        // 🚀 ใช้สูตรคำนวณใหม่
+                        status: determineStatus(r.planQ1, r.planQ2, r.planQ3, r.planQ4, r.actual, currentQuarter),
+                        issue: r.issue
                     }));
                 } else {
                     let kpiAgg = {};
@@ -687,7 +695,8 @@
                             target: agg.target, actual: agg.actual,
                             planQ1: agg.p1, planQ2: agg.p2, planQ3: agg.p3, planQ4: agg.p4,
                             actualQ1: agg.a1, actualQ2: agg.a2, actualQ3: agg.a3, actualQ4: agg.a4,
-                            status: determineStatus(agg.p1, agg.p2, agg.p3, agg.p4, agg.actual, currentQuarter, isLastMonthOfQuarter),
+                            // 🚀 ใช้สูตรคำนวณใหม่
+                            status: determineStatus(agg.p1, agg.p2, agg.p3, agg.p4, agg.actual, currentQuarter),
                             issue: viewLevel === "GROUP" ? agg.issues.join("<br>") : ""
                         });
                     });
@@ -698,17 +707,12 @@
                             target: budgetAgg.target, actual: budgetAgg.actual,
                             planQ1: budgetAgg.p1, planQ2: budgetAgg.p2, planQ3: budgetAgg.p3, planQ4: budgetAgg.p4,
                             actualQ1: budgetAgg.a1, actualQ2: budgetAgg.a2, actualQ3: budgetAgg.a3, actualQ4: budgetAgg.a4,
-                            status: determineStatus(budgetAgg.p1, budgetAgg.p2, budgetAgg.p3, budgetAgg.p4, budgetAgg.actual, currentQuarter, isLastMonthOfQuarter),
+                            // 🚀 ใช้สูตรคำนวณใหม่
+                            status: determineStatus(budgetAgg.p1, budgetAgg.p2, budgetAgg.p3, budgetAgg.p4, budgetAgg.actual, currentQuarter),
                             issue: ""
                         });
                     }
                 }
-                
-                const qText = document.getElementById('dynamic-quarter-text');
-                if(qText) qText.textContent = `ณ ไตรมาสที่ ${currentQuarter}`;
-
-                document.getElementById('bar-chart-main-container').classList.remove('hidden');
-                document.getElementById('table-main-container').classList.remove('hidden');
                 
                 renderDashboardUI(synthesizedRows, viewLevel, isActivity);
 
@@ -750,7 +754,7 @@
                 let budgetTitleStr = viewLevel === "ALL" ? "งบประมาณทั้งปี (พรบ.)" : (viewLevel === "GROUP" ? "งบประมาณโครงการ (พรบ.)" : (isActivity ? "งบประมาณกิจกรรมหลัก (พรบ.)" : "งบประมาณโครงการ (พรบ.)"));
                 let kpiTargetTitlePrefix = viewLevel === "ALL" ? "เป้าหมายทั้งหมด (พรบ.)" : (viewLevel === "GROUP" ? "เป้าหมายโครงการ (พรบ.)" : (isActivity ? "เป้าหมายกิจกรรมหลัก (พรบ.)" : "เป้าหมายโครงการ (พรบ.)"));
 
-                // ================== 1. การ์ด KPI (🚀 ปรับ layout ไอคอนร้อยละชิดซ้าย เป็น 2 บรรทัดตามที่คุณต้องการ) ==================
+                // ================== 1. การ์ด KPI ==================
                 const kpiContainer = document.getElementById('kpi-cards-container');
                 kpiContainer.innerHTML = '';
                 
@@ -815,7 +819,7 @@
                 }
                 kpiContainer.classList.remove('hidden');
 
-                // ================== 2. การ์ดงบประมาณ (🚀 ขยายสเกลฟอนต์ให้เท่ากับการ์ด KPI และปรับป้ายร้อยละเป็น 2 บรรทัด) ==================
+                // ================== 2. การ์ดงบประมาณ ==================
                 const budgetContainer = document.getElementById('budget-cards-container');
                 budgetContainer.innerHTML = '';
                 if (budgetRows.length > 0) {
@@ -829,29 +833,29 @@
                             </h3>
                             <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 w-full relative z-10">
                                 
-                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                <div class="lg:col-span-2 bg-white rounded-[1.5rem] p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
                                     <div class="flex items-center mb-2">
                                         <div class="p-3 bg-blue-50 rounded-xl mr-3 text-[#2563EB] shadow-sm"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
-                                        <p class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-700 py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">งบประมาณที่ได้รับจัดสรร</p>
+                                        <p class="text-lg sm:text-xl lg:text-2xl font-black text-slate-700 py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">งบประมาณที่ได้รับจัดสรร</p>
                                     </div>
                                     <div class="mt-auto relative flex items-baseline justify-center w-full pt-4 min-h-[50px]">
-                                        <h2 class="text-3xl lg:text-4xl xl:text-5xl font-black text-[#1E3A8A] truncate px-12 sm:px-16">${formatMoney(bObj.target)}</h2>
+                                        <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#1E3A8A] truncate px-10 sm:px-16">${formatMoney(bObj.target)}</h2>
                                         <p class="absolute right-0 bottom-[2px] text-2xl lg:text-3xl font-black text-slate-500 opacity-90 pt-1">บาท</p>
                                     </div>
                                 </div>
                                 
-                                <div class="lg:col-span-2 bg-white rounded-xl p-4 sm:p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                <div class="lg:col-span-2 bg-white rounded-[1.5rem] p-6 flex flex-col hover:-translate-y-1.5 shadow-md transition-all duration-300">
                                     <div class="flex items-center mb-2">
                                         <div class="p-3 bg-emerald-50 rounded-xl mr-3 text-[#10B981] shadow-sm"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
-                                        <p class="text-xl sm:text-2xl lg:text-3xl font-black text-[#064E3B] py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">ผลการเบิกจ่ายสะสม</p>
+                                        <p class="text-lg sm:text-xl lg:text-2xl font-black text-[#064E3B] py-1.5 leading-normal tracking-tight whitespace-nowrap overflow-hidden text-ellipsis flex-1">ผลการเบิกจ่ายสะสม</p>
                                     </div>
                                     <div class="mt-auto relative flex items-baseline justify-center w-full pt-4 min-h-[50px]">
-                                        <h2 class="text-3xl lg:text-4xl xl:text-5xl font-black text-[#059669] truncate px-12 sm:px-16">${formatMoney(bObj.actual)}</h2>
+                                        <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#059669] truncate px-10 sm:px-16">${formatMoney(bObj.actual)}</h2>
                                         <p class="absolute right-0 bottom-[2px] text-2xl lg:text-3xl font-black text-[#34D399] opacity-90 pt-1">บาท</p>
                                     </div>
                                 </div>
 
-                                <div class="lg:col-span-1 bg-white rounded-xl p-4 sm:p-6 flex flex-col items-center justify-center hover:-translate-y-1.5 shadow-md transition-all duration-300">
+                                <div class="lg:col-span-1 bg-white rounded-[1.5rem] p-6 flex flex-col items-center justify-center hover:-translate-y-1.5 shadow-md transition-all duration-300">
                                     <div class="flex flex-row items-center justify-start gap-2.5 w-full mb-2 pl-2">
                                         <div class="p-1.5 bg-amber-50 rounded-xl text-[#D97706] shadow-sm flex-shrink-0 mt-0.5">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
@@ -863,7 +867,7 @@
                                     </div>
                                     <h2 class="text-4xl lg:text-5xl font-black text-[#D97706] text-center w-full mt-2">${pct.toFixed(2)}</h2>
                                 </div>
-                                
+
                             </div>
                         </div>
                     `;
@@ -885,12 +889,14 @@
                     if (hasKPI) {
                         unitKeys.forEach((unit, idx) => {
                             const d = kpiByUnit[unit];
-                            const percentCumCurrent = getPctVsCurrentPlan(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter, isLastMonthOfQuarter).toFixed(2);
-                            let statusObj = determineStatus(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter, isLastMonthOfQuarter);
+                            // 🚀 ใช้สูตรตรง
+                            const percentCumCurrent = getPctVsCurrentPlan(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter).toFixed(2);
+                            let statusObj = determineStatus(d.p1, d.p2, d.p3, d.p4, d.actual, currentQuarter);
                             const theme = kpiColorThemes[idx % kpiColorThemes.length];
                             const statusColor = getDonutStatusColorConfig(statusObj);
                             
                             let displayStatusObj = statusObj.includes("มีแผนอยู่ใน") ? statusObj.replace("มีแผนอยู่ใน ", "มีแผนอยู่ใน<br>") : statusObj;
+                            let displayGaugeTitle = (viewLevel !== "ALL") ? `กิจกรรม KPI (${unit})` : unit;
 
                             const pctVal = parseFloat(percentCumCurrent);
                             const arcLength = 251.32; 
@@ -901,12 +907,10 @@
                             pieChartsContainer.innerHTML += `
                                 <div class="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.35rem)] max-w-[420px] ${theme.cardPctBg} rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-white flex flex-col relative hover:-translate-y-2 overflow-hidden transition-all duration-500 pb-6">
                                     <div class="absolute top-0 left-0 w-full h-2 ${statusColor.badgeBg}"></div>
-                                    
                                     <div class="relative z-10 px-6 pt-8 pb-0 flex flex-col items-center w-full h-full">
                                         <div class="mb-5 w-full text-center border-b border-black/10 pb-5">
-                                            <h4 class="text-2xl sm:text-3xl font-black ${theme.darkText} drop-shadow-md truncate w-full pt-1 tracking-wide px-2 bg-white/40 py-1.5 rounded-xl border border-white/50 inline-block shadow-sm">${unit}</h4>
+                                            <h4 class="text-xl sm:text-2xl lg:text-3xl font-black ${theme.darkText} drop-shadow-md truncate w-full pt-1 tracking-wide px-2 bg-white/40 py-1.5 rounded-xl border border-white/50 inline-block shadow-sm">${displayGaugeTitle}</h4>
                                         </div>
-
                                         <div class="relative w-[320px] h-[170px] mx-auto mt-4 flex justify-center">
                                             <svg viewBox="0 0 200 120" class="w-full h-full overflow-visible z-10" style="filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.15));">
                                                 <defs>
@@ -922,14 +926,12 @@
                                                         <stop offset="100%" stop-color="${statusColor.ring}" />
                                                     </linearGradient>
                                                 </defs>
-                                                
                                                 <path d="M 40 100 A 60 60 0 0 1 160 100" fill="none" stroke="#1E293B" stroke-width="4" stroke-dasharray="3 15.8" opacity="0.7" />
                                                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" />
                                                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#E2E8F0" stroke-width="24" stroke-linecap="round" opacity="0.6"/>
                                                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#grad-kpi-${idx})" stroke-width="24" stroke-linecap="round"
                                                       stroke-dasharray="${arcLength}" stroke-dashoffset="${arcLength}"
                                                       id="svg-arc-kpi-${idx}" class="gauge-arc-transition" filter="url(#glow-kpi-${idx})" />
-
                                                 <g id="svg-needle-kpi-${idx}" class="gauge-needle-transition" style="transform-origin: 100px 100px; transform: rotate(-90deg); filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
                                                     <polygon points="95,100 105,100 100,16" fill="#1E293B" />
                                                     <circle cx="100" cy="100" r="14" fill="#1E293B" />
@@ -937,18 +939,15 @@
                                                 </g>
                                             </svg>
                                         </div>
-                                        
                                         <div class="mt-auto w-full pt-2">
                                             <div class="w-full ${statusColor.badgeBg} border-2 ${statusColor.border} rounded-3xl p-3 shadow-xl flex flex-row items-stretch justify-between ${statusColor.animClass} relative overflow-hidden">
                                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-2xl pointer-events-none"></div>
-                                                
                                                 <div class="w-[32%] flex flex-col items-center justify-center border-r-2 ${statusColor.sepBorder} pr-1 relative z-10">
                                                     <div class="flex items-baseline gap-0.5">
                                                         <span class="text-3xl sm:text-4xl font-black ${statusColor.pctText} tracking-tighter drop-shadow-md">${percentCumCurrent}</span>
                                                         <span class="text-lg sm:text-xl font-bold ${statusColor.pctText} opacity-90 drop-shadow-sm">%</span>
                                                     </div>
                                                 </div>
-
                                                 <div class="w-[68%] flex flex-col items-center justify-center pl-2 gap-1.5 relative z-10 overflow-hidden">
                                                     <div class="flex items-center justify-center gap-1.5 w-full">
                                                         <span class="text-xl sm:text-2xl drop-shadow-md shrink-0">${getStatusEmoji(statusObj)}</span>
@@ -958,7 +957,6 @@
                                                         <p class="text-[10px] sm:text-xs font-black ${statusColor.subText} pt-0.5 tracking-wide text-center leading-snug">เกณฑ์: ${statusColor.subtext}</p>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
@@ -970,8 +968,8 @@
 
                     if (budgetRows.length > 0) {
                         const bObj = budgetRows[0];
-                        const bPctCurrent = getPctVsCurrentPlan(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter, isLastMonthOfQuarter).toFixed(2);
-                        let bStatus = determineStatus(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter, isLastMonthOfQuarter);
+                        const bPctCurrent = getPctVsCurrentPlan(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter).toFixed(2);
+                        let bStatus = determineStatus(bObj.planQ1, bObj.planQ2, bObj.planQ3, bObj.planQ4, bObj.actual, currentQuarter);
                         const bStatusColor = getDonutStatusColorConfig(bStatus);
                         
                         let displayBStatus = bStatus.includes("มีแผนอยู่ใน") ? bStatus.replace("มีแผนอยู่ใน ", "มีแผนอยู่ใน<br>") : bStatus;
@@ -985,12 +983,10 @@
                         pieChartsContainer.innerHTML += `
                             <div class="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.35rem)] max-w-[420px] bg-[#FEF3C7] rounded-[2.5rem] shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-white flex flex-col relative hover:-translate-y-2 overflow-hidden transition-all duration-500 pb-6">
                                 <div class="absolute top-0 left-0 w-full h-2 ${bStatusColor.badgeBg}"></div>
-                                
                                 <div class="relative z-10 px-6 pt-8 pb-0 flex flex-col items-center w-full h-full">
                                     <div class="mb-5 w-full text-center border-b border-black/10 pb-5">
                                         <h4 class="text-2xl sm:text-3xl font-black text-amber-900 drop-shadow-md truncate w-full pt-1 tracking-wide px-2 bg-white/40 py-1.5 rounded-xl border border-white/50 inline-block shadow-sm">ผลการเบิกจ่าย</h4>
                                     </div>
-
                                     <div class="relative w-[320px] h-[170px] mx-auto mt-4 flex justify-center">
                                         <svg viewBox="0 0 200 120" class="w-full h-full overflow-visible z-10" style="filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.15));">
                                             <defs>
@@ -1006,14 +1002,12 @@
                                                     <stop offset="100%" stop-color="${bStatusColor.ring}" />
                                                 </linearGradient>
                                             </defs>
-                                            
                                             <path d="M 40 100 A 60 60 0 0 1 160 100" fill="none" stroke="#1E293B" stroke-width="4" stroke-dasharray="3 15.8" opacity="0.7" />
                                             <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" />
                                             <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#E2E8F0" stroke-width="24" stroke-linecap="round" opacity="0.6"/>
                                             <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#grad-budget)" stroke-width="24" stroke-linecap="round"
                                                   stroke-dasharray="${arcLength}" stroke-dashoffset="${arcLength}"
                                                   id="svg-arc-budget" class="gauge-arc-transition" filter="url(#glow-budget)" />
-
                                             <g id="svg-needle-budget" class="gauge-needle-transition" style="transform-origin: 100px 100px; transform: rotate(-90deg); filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">
                                                 <polygon points="95,100 105,100 100,16" fill="#1E293B" />
                                                 <circle cx="100" cy="100" r="14" fill="#1E293B" />
@@ -1021,18 +1015,15 @@
                                             </g>
                                         </svg>
                                     </div>
-                                    
                                     <div class="mt-auto w-full pt-2">
                                         <div class="w-full ${bStatusColor.badgeBg} border-2 ${bStatusColor.border} rounded-3xl p-3 shadow-xl flex flex-row items-stretch justify-between ${bStatusColor.animClass} relative overflow-hidden">
                                             <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-2xl pointer-events-none"></div>
-                                            
                                             <div class="w-[32%] flex flex-col items-center justify-center border-r-2 ${bStatusColor.sepBorder} pr-1 relative z-10">
                                                 <div class="flex items-baseline gap-0.5">
                                                     <span class="text-3xl sm:text-4xl font-black ${bStatusColor.pctText} tracking-tighter drop-shadow-md">${bPctCurrent}</span>
                                                     <span class="text-lg sm:text-xl font-bold ${bStatusColor.pctText} opacity-90 drop-shadow-sm">%</span>
                                                 </div>
                                             </div>
-
                                             <div class="w-[68%] flex flex-col items-center justify-center pl-2 gap-1.5 relative z-10 overflow-hidden">
                                                 <div class="flex items-center justify-center gap-1.5 w-full">
                                                     <span class="text-xl sm:text-2xl drop-shadow-md shrink-0">${getStatusEmoji(bStatus)}</span>
@@ -1042,7 +1033,6 @@
                                                     <p class="text-[10px] sm:text-xs font-black ${bStatusColor.subText} pt-0.5 tracking-wide text-center leading-snug">เกณฑ์: ${bStatusColor.subtext}</p>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -1307,41 +1297,41 @@
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                             <div class="bg-blue-600 rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-white shadow-md border border-blue-700 hover:-translate-y-1 transition-transform relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-base sm:text-lg lg:text-xl font-bold opacity-90 mb-1 z-10 pt-1 text-center whitespace-nowrap">${firstCardTitle}</p>
-                                <h2 class="text-5xl sm:text-6xl font-black z-10 leading-none pt-1 mb-2">${cTotal}</h2>
+                                <p class="text-base sm:text-lg font-bold opacity-90 mb-1 z-10 pt-1 text-center whitespace-nowrap">${firstCardTitle}</p>
+                                <h2 class="text-5xl font-black z-10 leading-none pt-1 mb-2">${cTotal}</h2>
                             </div>
                             
                             <div class="w-full ${confSucc.badgeBg} border-2 ${confSucc.border} rounded-[1.5rem] p-4 shadow-md flex flex-col items-center justify-center text-center relative overflow-hidden transition-transform hover:-translate-y-1 ${confSucc.animClass}">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-base sm:text-lg lg:text-xl font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confSucc.badgeText}">เป็นไปตามแผน</p>
-                                <h2 class="text-5xl sm:text-6xl font-black z-10 leading-none pt-1 mb-3 ${confSucc.badgeText}">${cSuccess}</h2>
-                                <div class="w-full ${confSucc.subBg} px-2 py-1.5 rounded-xl border ${confSucc.subBorder} shadow-sm relative z-10"><p class="text-xs sm:text-sm font-bold ${confSucc.subText} pt-1">${confSucc.subtext}</p></div>
+                                <p class="text-base sm:text-lg font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confSucc.badgeText}">เป็นไปตามแผน</p>
+                                <h2 class="text-5xl font-black z-10 leading-none pt-1 mb-3 ${confSucc.badgeText}">${cSuccess}</h2>
+                                <div class="w-full ${confSucc.subBg} px-2 py-1.5 rounded-xl border ${confSucc.subBorder} shadow-sm relative z-10"><p class="text-[10px] sm:text-xs font-bold ${confSucc.subText} pt-1">${confSucc.subtext}</p></div>
                             </div>
 
                             <div class="w-full ${confWarn.badgeBg} border-2 ${confWarn.border} rounded-[1.5rem] p-4 shadow-md flex flex-col items-center justify-center text-center relative overflow-hidden transition-transform hover:-translate-y-1 ${confWarn.animClass}">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-base sm:text-lg lg:text-xl font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confWarn.badgeText}">ล่าช้า</p>
-                                <h2 class="text-5xl sm:text-6xl font-black z-10 leading-none pt-1 mb-3 ${confWarn.badgeText}">${cWarning}</h2>
-                                <div class="w-full ${confWarn.subBg} px-2 py-1.5 rounded-xl border ${confWarn.subBorder} shadow-sm relative z-10"><p class="text-xs sm:text-sm font-bold ${confWarn.subText} pt-1">${confWarn.subtext}</p></div>
+                                <p class="text-base sm:text-lg font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confWarn.badgeText}">ล่าช้า</p>
+                                <h2 class="text-5xl font-black z-10 leading-none pt-1 mb-3 ${confWarn.badgeText}">${cWarning}</h2>
+                                <div class="w-full ${confWarn.subBg} px-2 py-1.5 rounded-xl border ${confWarn.subBorder} shadow-sm relative z-10"><p class="text-[10px] sm:text-xs font-bold ${confWarn.subText} pt-1">${confWarn.subtext}</p></div>
                             </div>
 
                             <div class="w-full ${confDang.badgeBg} border-2 ${confDang.border} rounded-[1.5rem] p-4 shadow-md flex flex-col items-center justify-center text-center relative overflow-hidden transition-transform hover:-translate-y-1 ${confDang.animClass}">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-base sm:text-lg lg:text-xl font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confDang.badgeText}">เสี่ยง</p>
-                                <h2 class="text-5xl sm:text-6xl font-black z-10 leading-none pt-1 mb-3 ${confDang.badgeText}">${cDanger}</h2>
-                                <div class="w-full ${confDang.subBg} px-2 py-1.5 rounded-xl border ${confDang.subBorder} shadow-sm relative z-10"><p class="text-xs sm:text-sm font-bold ${confDang.subText} pt-1">${confDang.subtext}</p></div>
+                                <p class="text-base sm:text-lg font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confDang.badgeText}">เสี่ยง</p>
+                                <h2 class="text-5xl font-black z-10 leading-none pt-1 mb-3 ${confDang.badgeText}">${cDanger}</h2>
+                                <div class="w-full ${confDang.subBg} px-2 py-1.5 rounded-xl border ${confDang.subBorder} shadow-sm relative z-10"><p class="text-[10px] sm:text-xs font-bold ${confDang.subText} pt-1">${confDang.subtext}</p></div>
                             </div>
 
                             <div class="w-full ${confNone.badgeBg} border-2 ${confNone.border} rounded-[1.5rem] p-4 shadow-md flex flex-col items-center justify-center text-center relative overflow-hidden transition-transform hover:-translate-y-1 ${confNone.animClass}">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/20 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-base sm:text-lg lg:text-xl font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confNone.badgeText}">ยังไม่ดำเนินการ</p>
-                                <h2 class="text-5xl sm:text-6xl font-black z-10 leading-none pt-1 mb-3 ${confNone.badgeText}">${cNotStarted}</h2>
-                                <div class="w-full ${confNone.subBg} px-2 py-1.5 rounded-xl border ${confNone.subBorder} shadow-sm relative z-10"><p class="text-xs sm:text-sm font-bold ${confNone.subText} pt-1">${confNone.subtext}</p></div>
+                                <p class="text-base sm:text-lg font-bold opacity-90 mb-1 z-10 pt-1 whitespace-nowrap ${confNone.badgeText}">ยังไม่ดำเนินการ</p>
+                                <h2 class="text-5xl font-black z-10 leading-none pt-1 mb-3 ${confNone.badgeText}">${cNotStarted}</h2>
+                                <div class="w-full ${confNone.subBg} px-2 py-1.5 rounded-xl border ${confNone.subBorder} shadow-sm relative z-10"><p class="text-[10px] sm:text-xs font-bold ${confNone.subText} pt-1">${confNone.subtext}</p></div>
                             </div>
 
                             <div class="w-full ${confFutu.badgeBg} border-2 ${confFutu.border} rounded-[1.5rem] p-4 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden transition-transform hover:-translate-y-1">
                                 <div class="absolute top-0 left-0 w-full h-1/2 bg-white/50 rounded-t-xl pointer-events-none"></div>
-                                <p class="text-sm sm:text-base font-bold opacity-80 mb-1 z-10 pt-1 text-center leading-tight ${confFutu.badgeText}">มีแผนใน<br>ไตรมาสถัดไป</p>
+                                <p class="text-xs sm:text-sm font-bold opacity-80 mb-1 z-10 pt-1 text-center leading-tight ${confFutu.badgeText}">มีแผนใน<br>ไตรมาสถัดไป</p>
                                 <h2 class="text-4xl sm:text-5xl font-black z-10 leading-none mt-1 mb-3 ${confFutu.badgeText}">${cFuture}</h2>
                                 <div class="w-full ${confFutu.subBg} px-2 py-1.5 rounded-xl border ${confFutu.subBorder} shadow-sm relative z-10"><p class="text-[10px] sm:text-xs font-bold ${confFutu.subText} pt-1">${confFutu.subtext}</p></div>
                             </div>
@@ -1363,7 +1353,8 @@
                 tableActivities.forEach((act, index) => {
                     const safeTarget = act.target > 0 ? act.target : 1;
                     const pctYearly = (act.actual / safeTarget) * 100;
-                    const pctCurrent = getPctVsCurrentPlan(act.planQ1, act.planQ2, act.planQ3, act.planQ4, act.actual, currentQuarter, isLastMonthOfQuarter);
+                    // 🚀 ใช้สูตรตรง
+                    const pctCurrent = getPctVsCurrentPlan(act.planQ1, act.planQ2, act.planQ3, act.planQ4, act.actual, currentQuarter);
                     
                     const q1Pos = Math.min((act.planQ1 / safeTarget) * 100, 100);
                     const q2Pos = Math.min(((act.planQ1 + act.planQ2) / safeTarget) * 100, 100);
@@ -1488,7 +1479,7 @@
                 // ================== 7. โซนปัญหาและอุปสรรค ==================
                 if (viewLevel === 'SINGLE' || viewLevel === 'GROUP') {
                     let issuesHtml = '';
-                    if (Object.values(kpiByUnit).some(u => ["ล่าช้า", "เสี่ยง", "ยังไม่ดำเนินการ"].some(st => determineStatus(u.planQ1, u.planQ2, u.planQ3, u.planQ4, u.actual, currentQuarter, isLastMonthOfQuarter).includes(st)))) {
+                    if (Object.values(kpiByUnit).some(u => ["ล่าช้า", "เสี่ยง", "ยังไม่ดำเนินการ"].some(st => determineStatus(u.planQ1, u.planQ2, u.planQ3, u.planQ4, u.actual, currentQuarter).includes(st)))) {
                         issuesHtml += `<div class="bg-gradient-to-r from-red-50 to-white border-l-4 border-red-500 p-5 rounded-r-xl shadow-md mb-8 hover:-translate-y-1 transition-transform anim-danger"><h4 class="font-extrabold text-red-800 mb-2 pt-1 text-lg">แจ้งเตือนสถานะภาพรวม</h4><p class="text-sm sm:text-base text-red-700 leading-relaxed font-bold pt-1">ผลการดำเนินงานสะสมยังต่ำกว่าแผนงานสะสม ขอให้เร่งรัดการดำเนินงานและติดตามอย่างใกล้ชิด</p></div>`;
                     }
                     
