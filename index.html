@@ -615,6 +615,8 @@
                         for(let k in rawRow) { if (k.replace(/\s+/g, '') === "หน่วยนับ") { unit = rawRow[k] || "ราย"; break; } }
 
                         let groupName = viewLevel === "ALL" ? (fileItem.group || "โครงการอื่นๆ") : (viewLevel === "GROUP" ? fileItem.name.replace(/^- /, '') : name);
+                        
+                        // 💡 โค้ดเดิมที่ถูกต้อง 100% (ไม่มีการดักคำว่าปีงบประมาณ คุณจะจัดการใน Sheets เอง)
                         let isBudget = name.includes("งบประมาณ");
                         
                         let rawTarget = getSafeNum(rawRow, "เป้าหมาย");
@@ -1215,18 +1217,15 @@
                     }, 50);
                 }
 
-                // ================== 5. โซนภาพรวมสถานะ (🚀 แก้ไขให้โชว์ "ผลผลิต/โครงการ" และนับครบ 23 รายการ) ==================
+                // ================== 5. โซนภาพรวมสถานะ ==================
                 let summaryTitle = "";
                 let firstCardTitle = "";
                 let tableTitle = "";
                 let col1Title = "";
-                
                 if (viewLevel === "ALL") {
                     summaryTitle = "ภาพรวมสถานะโครงการทั้งหมด (อ้างอิงไตรมาสปัจจุบัน)";
-                    // 🚀 เปลี่ยนข้อความและบังคับขึ้นบรรทัดใหม่
                     firstCardTitle = "ผลผลิต/โครงการ<br>ทั้งหมด";
                     tableTitle = "ตารางแสดงการติดตามสถานะโครงการ";
-                    // 🚀 เปลี่ยนชื่อคอลัมน์แรกในตาราง
                     col1Title = "ผลผลิต/โครงการ";
                 } else if (viewLevel === "GROUP") {
                     summaryTitle = "ภาพรวมสถานะกิจกรรมหลักทั้งหมด (อ้างอิงไตรมาสปัจจุบัน)";
@@ -1241,7 +1240,6 @@
                 }
 
                 let cTotal = 0, cSuccess = 0, cWarning = 0, cDanger = 0, cNotStarted = 0, cFuture = 0;
-                
                 if (viewLevel === "ALL") {
                     let projStatuses = {};
                     tableActivities.forEach(act => {
@@ -1253,16 +1251,13 @@
                         else if (act.status.includes("มีแผนอยู่ใน")) rank = 1;
                         else rank = 1;
 
-                        // 🚀 เปลี่ยนกุญแจ (Key) ในการนับ โดยใช้ "ลำดับ + ชื่อ" ป้องกันการนับรวบชื่อซ้ำ
-                        let uniqueKey = act.seq + '_' + act.name;
-                        
-                        if (!projStatuses[uniqueKey] || rank > projStatuses[uniqueKey].rank) {
-                            projStatuses[uniqueKey] = { rank: rank, status: act.status };
+                        if (!projStatuses[act.name] || rank > projStatuses[act.name].rank) {
+                            projStatuses[act.name] = { rank: rank, status: act.status };
                         }
                     });
                     
                     const projList = Object.values(projStatuses);
-                    cTotal = projList.length; // 🚀 ตอนนี้จะนับได้ 23 รายการเป๊ะแล้วครับ
+                    cTotal = projList.length;
                     projList.forEach(p => {
                         if (p.rank === 5) cDanger++;
                         else if (p.rank === 4) cWarning++;
